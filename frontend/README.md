@@ -67,3 +67,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   </React.StrictMode>
 );
 ```
+
+# Tailwind CSS reusable classes
+
+- Để làm Header thì ta bao bọc nó trong thẻ <header className:'header'></header>
+- Ta chưa cần làm để ý padding hay padding của nó
+- Chiều cao ban đầu của thẻ <header></header> phụ thuộc vào cái có chiều cao lớn nhất (trong trường hợp này là button có h-[44px])
+- Sau khi hoàn thành xong thì ta mới bắt đầu sửa thẻ header trong index.css
