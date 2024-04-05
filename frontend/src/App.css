@@ -22,6 +22,42 @@ body{
   box-shadow: 3px 3px -8px 3px #ddd;
 }
 
+.swiper-pagination-bullet{
+  width: 12px !important;
+  height: 12px !important;
+  border: 1px solid #181A1E !important;
+  opacity: 100% !important;
+  background: #fff !important;
+}
+
+.swiper-pagination-bullet-active{
+  background: #0067FF !important;
+  border: none !important;
+}
+
+.swiper{
+  padding-bottom: 70px !important;
+}
+
+/**
+* Nếu có 3 thằng thì cái giữa sẽ có css này
+* Nếu có 2 thằng thì cái thứ 2 sẽ có css này
+*/
+.swiper-slide.swiper-slide-next{
+  background: #0067FF;
+  border-radius: 12px;
+  box-shadow: 0px 20px 70px rgba(0, 103, 255, 0.3) !important;
+}
+
+.swiper-slide.swiper-slide-next h4, 
+.swiper-slide.swiper-slide-next p{
+  color: #fff !important;
+}
+
+.swiper-pagination{
+  top: 90% !important;
+}
+
 @media only screen and (max-width: 768px){
   .navigation{
     width: 100%;

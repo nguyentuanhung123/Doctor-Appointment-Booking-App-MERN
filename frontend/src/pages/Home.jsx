@@ -16,6 +16,7 @@ import About from '../components/About/About';
 import ServiceList from '../components/Services/ServiceList';
 import DoctorList from '../components/Doctors/DoctorList';
 import FaqList from '../components/Faq/FaqList';
+import Testimonial from '../components/Testimonial/Testimonial';
 
 /**
     * @media (min-width: 1536px) {
@@ -297,13 +298,29 @@ const Home = () => {
                             <h2 className="heading">
                                 Most questions by our beloved patients
                             </h2>
-                            
+
                             <FaqList />
                         </div>
                     </div>
                 </div>
             </section>
             {/* ================= faq section end ================= */}
+
+            {/* ================= testimonial start ================= */}
+            <section>
+                <div className="container">
+                    <div className="xl:w-[470px] mx-auto">
+                        <h2 className='heading text-center'>What our patient say</h2>
+                        <p className='text__para text-center'>
+                            World-class care for everyone. Our health System offers unmatched,
+                            expert health care.
+                        </p>
+                    </div>
+
+                    <Testimonial />
+                </div>
+            </section>
+            {/* ================= testimonial end ================= */}
         </>
     )
 }

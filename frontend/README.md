@@ -156,3 +156,134 @@ const FaqItem = ({ faq }) => {
 
 export default FaqItem;
 ```
+
+# Sử dụng swiper
+
+```jsx
+import { Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+
+import patientAvatar from "../../assets/images/patient-avatar.png";
+
+import { HiStar } from "react-icons/hi";
+
+const Testimonial = () => {
+  return (
+    <div className="mt-[30px] lg:mt-[55px]">
+      <Swiper
+        modules={[Pagination]}
+        spaceBetween={30}
+        slidesPerView={1}
+        pagination={{ clickable: true }}
+        breakpoints={{
+          640: {
+            slidesPerView: 1,
+            spaceBetween: 0,
+          },
+          768: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          1024: {
+            slidesPerView: 3,
+            spaceBetween: 30,
+          },
+        }}
+      >
+        <SwiperSlide>
+          <div className="py-[30px] px-5 rounded-3">
+            <div className="flex items-center gap-[13px]">
+              <img src={patientAvatar} alt="" />
+              <div>
+                <h4 className="text-[18px] leading-[30px] font-semibold text-headingColor">
+                  Muhibur Rahman
+                </h4>
+                <div className="flex items-center gap-[2px]">
+                  <HiStar className="text-yellowColor w-[18px] h-5" />
+                  <HiStar className="text-yellowColor w-[18px] h-5" />
+                  <HiStar className="text-yellowColor w-[18px] h-5" />
+                  <HiStar className="text-yellowColor w-[18px] h-5" />
+                  <HiStar className="text-yellowColor w-[18px] h-5" />
+                </div>
+              </div>
+            </div>
+
+            <p className="text-[16px] leading-7 mt-4 text-textColor font-[400]">
+              I have taken medical services from them. They treat so well and
+              they are providing the best medical services.
+            </p>
+          </div>
+        </SwiperSlide>
+        <SwiperSlide>
+          <div className="py-[30px] px-5 rounded-3">
+            <div className="flex items-center gap-[13px]">
+              <img src={patientAvatar} alt="" />
+              <div>
+                <h4 className="text-[18px] leading-[30px] font-semibold text-headingColor">
+                  Muhibur Rahman
+                </h4>
+                <div className="flex items-center gap-[2px]">
+                  <HiStar className="text-yellowColor w-[18px] h-5" />
+                  <HiStar className="text-yellowColor w-[18px] h-5" />
+                  <HiStar className="text-yellowColor w-[18px] h-5" />
+                  <HiStar className="text-yellowColor w-[18px] h-5" />
+                  <HiStar className="text-yellowColor w-[18px] h-5" />
+                </div>
+              </div>
+            </div>
+
+            <p className="text-[16px] leading-7 mt-4 text-textColor font-[400]">
+              I have taken medical services from them. They treat so well and
+              they are providing the best medical services.
+            </p>
+          </div>
+        </SwiperSlide>
+      </Swiper>
+    </div>
+  );
+};
+
+export default Testimonial;
+```
+
+# CSS Swiper
+
+```css
+.swiper-pagination-bullet {
+  width: 12px !important;
+  height: 12px !important;
+  border: 1px solid #181a1e !important;
+  opacity: 100% !important;
+  background: #fff !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #0067ff !important;
+  border: none !important;
+}
+
+.swiper {
+  padding-bottom: 70px !important;
+}
+
+/**
+* Nếu có 3 thằng thì cái giữa sẽ có css này
+* Nếu có 2 thằng thì cái thứ 2 sẽ có css này
+*/
+.swiper-slide.swiper-slide-next {
+  background: #0067ff;
+  border-radius: 12px;
+  box-shadow: 0px 20px 70px rgba(0, 103, 255, 0.3) !important;
+}
+
+.swiper-slide.swiper-slide-next h4,
+.swiper-slide.swiper-slide-next p {
+  color: #fff !important;
+}
+
+.swiper-pagination {
+  top: 90% !important;
+}
+```
