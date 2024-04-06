@@ -287,3 +287,160 @@ export default Testimonial;
   top: 90% !important;
 }
 ```
+
+# Giải thích về col-span
+
+- Nếu ta dùng grid để tạo 3 cột thì thẻ div có col-span-2 sẽ chiếm 2 cột
+
+# CSS để có dấu gạch dưới mỗi lần bấm
+
+```jsx
+import { useState } from "react";
+import doctorImg from "../../assets/images/doctor-img02.png";
+import starIcon from "../../assets/images/Star.png";
+
+const DoctorDetails = () => {
+  const [tab, setTab] = useState("about");
+
+  return (
+    <section>
+      <div className="max-w-[1170px] px-5 mx-auto">
+        <div className="grid md:grid-cols-3 gap-[50px]">
+          <div className="md:col-span-2">
+            <div className="flex items-center gap-5">
+              <figure className="max-w-[200px] max-h-[200px]">
+                <img src={doctorImg} alt="" />
+              </figure>
+
+              <div>
+                <span
+                  className="bg-[#CCF0F3] text-irisBlueColor py-1 px-6 lg:py-2 px-6
+                                text-[12px] leading-4 lg:text-[16px] lg:leading-7 font-semibold rounded"
+                >
+                  Surgeon
+                </span>
+                <h3 className="text-headingColor text-[22px] leading-9 mt-3 font-bold">
+                  Muhibur Rahman
+                </h3>
+                <div className="flex items-center gap-[6px]">
+                  <span
+                    className="flex items-center gap-[6px] text-[14px] leading-5
+                                    lg:text-[16px] lg:leading-7 font-semibold text-headingColor"
+                  >
+                    <img src={starIcon} alt="" /> 4.8
+                  </span>
+                  <span
+                    className="text-[14px] leading-5
+                                    lg:text-[16px] lg:leading-7 font-[400] text-textColor"
+                  >
+                    (272)
+                  </span>
+                </div>
+
+                <p className="text__para text-[14px] leading-6 md:text-[15px] lg:max-w-[390px]">
+                  A Swiss-French physician, bacteriologist and explorer. He is
+                  famous for being the first to discover the bacillus that
+                  causes the bubonic plague,
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-[50px] border-b border-solid border-[#0066FF34]">
+              <button
+                onClick={() => setTab("about")}
+                className={`${
+                  tab === "about" && "border-b border-solid border-primaryColor"
+                } py-2 px-5 mr-5 text-[16px] leading-7 text-headingColor font-semibold`}
+              >
+                About
+              </button>
+              <button
+                onClick={() => setTab("feedback")}
+                className={`${
+                  tab === "feedback" &&
+                  "border-b border-solid border-primaryColor"
+                } py-2 px-5 mr-5 text-[16px] leading-7 text-headingColor font-semibold`}
+              >
+                Feedback
+              </button>
+            </div>
+          </div>
+          <div></div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default DoctorDetails;
+```
+
+# Format Date
+
+```jsx
+export const formatDate = (date, config) => {
+  const defaultOptions = { day: "numeric", month: "long", year: "numeric" };
+  const options = config ? config : defaultOptions;
+
+  return new Date(date).toLocaleDateString("en-US", options);
+};
+
+<span className="text-irisBlueColor text-[15px] leading-6 font-semibold">
+  {formatDate("12-04-2010")}
+</span>;
+
+// -> December 4, 2010
+```
+
+# Điều chỉnh số Sao
+
+```jsx
+import React, { useState } from "react";
+import { AiFillStar } from "react-icons/ai";
+
+const FeedbackForm = () => {
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
+
+  return (
+    <form action="">
+      <div>
+        <h3 className="text-headingColor text-[16px] leading-6 font-semibold mb-4">
+          How would you rate the overrall experience
+        </h3>
+
+        <div>
+          {[...Array(5).keys()].map((_, index) => {
+            index += 1;
+
+            return (
+              <button
+                key={index}
+                type="button"
+                className={`${
+                  index <= ((rating && hover) || hover)
+                    ? "text-yellowColor"
+                    : "text-gray-400"
+                } bg-transparent border-none outline-none text-[22px] cursor-pointer`}
+                onClick={() => setRating(index)}
+                onMouseEnter={() => setHover(index)}
+                onMouseLeave={() => setHover(rating)}
+                onDoubleClick={() => {
+                  setHover(0);
+                  setRating(0);
+                }}
+              >
+                <span>
+                  <AiFillStar />
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </form>
+  );
+};
+
+export default FeedbackForm;
+```
