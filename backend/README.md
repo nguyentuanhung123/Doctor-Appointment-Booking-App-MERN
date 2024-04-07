@@ -31,3 +31,41 @@
 - Router tuyến đường: Đối số thứ hai là một router, trong trường hợp này là authRoute, mà đã được định nghĩa trước đó trong mã của bạn. Router này chứa các tuyến đường (routes) cụ thể cho xác thực người dùng.
 
 - Với cấu hình này, mọi yêu cầu đến các endpoint bắt đầu bằng '/api/v1/auth' sẽ được chuyển đến và xử lý bởi các tuyến đường được định nghĩa trong authRoute. Điều này giúp tổ chức và quản lý mã của bạn một cách hiệu quả, đặc biệt là khi ứng dụng của bạn có nhiều chức năng và endpoints khác nhau.
+
+# Các bước khởi tạo Router trong Backend
+
+- B1 : Tạo authController.js trong thư mục controller của backend
+- B2 : Thêm code trong authController.js
+
+```jsx
+export const register = async (req, res) => {
+  try {
+  } catch (err) {}
+};
+
+export const login = async (req, res) => {
+  try {
+  } catch (err) {}
+};
+```
+
+- B3 : Tạo auth.js trong thư mục routes của backend
+
+```jsx
+import express from "express";
+import { register, login } from "../controllers/authController.js";
+
+const router = express.Router();
+
+router.post("/register", register);
+router.post("/login", login);
+
+export default router;
+```
+
+B4: Vào file index.js và bổ sung
+
+```jsx
+import authRoute from "./routes/auth.js";
+app.use("/api/v1/auth", authRoute); // domain/api/v1/auth/register
+```
