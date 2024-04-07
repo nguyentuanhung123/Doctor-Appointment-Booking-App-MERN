@@ -69,3 +69,11 @@ B4: Vào file index.js và bổ sung
 import authRoute from "./routes/auth.js";
 app.use("/api/v1/auth", authRoute); // domain/api/v1/auth/register
 ```
+
+# Cách để tạo một JWT_SECRET_key ngẫu nhiên trên máy
+
+B1: Vào Terminal (folder tổng)
+B2: Gõ: node
+B3: Gõ: crypto.randomBytes(256).toString('base64')
+B4: Copy tất cả ký tự không bao gồm ''
+B5: Paste trong file .env
