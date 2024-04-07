@@ -444,3 +444,11 @@ const FeedbackForm = () => {
 
 export default FeedbackForm;
 ```
+
+# Giải thích đoạn code trong Feedback và FeedbackForm
+
+- Array(5).keys(): Đoạn mã này tạo ra một mảng có 5 phần tử (với các giá trị từ 0 đến 4) và sau đó trích xuất các key của mỗi phần tử.
+
+- .map((\_, index) => {...}): Đây là một phương thức map được gọi trên mảng 5 phần tử, trong đó mỗi phần tử sẽ là một button "star". Callback function nhận vào hai tham số, nhưng ở đây chỉ sử dụng tham số thứ hai, tức là chỉ số của mỗi phần tử.
+
+- index += 1;: Dòng này tăng index của mỗi button lên một đơn vị. Điều này được thực hiện để đảm bảo index bắt đầu từ 1 thay vì 0.
