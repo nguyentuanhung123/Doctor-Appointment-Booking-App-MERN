@@ -533,7 +533,7 @@ const handleFileInputChange = async (e) => {
 }
 ```
 
-- space-y-8
+_-_ space-y-8
 
 ```css
 margin-top: 2rem; /* 32px */
@@ -544,3 +544,5 @@ margin-top: 2rem; /* 32px */
 
 -Thêm không gian theo chiều dọc giữa children
 Sử dụng tiện ích space-y-\* để kiểm soát khoảng cách dọc giữa các phần tử
+
+- sm:w-fit
