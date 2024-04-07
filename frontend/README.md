@@ -449,6 +449,98 @@ export default FeedbackForm;
 
 - Array(5).keys(): Đoạn mã này tạo ra một mảng có 5 phần tử (với các giá trị từ 0 đến 4) và sau đó trích xuất các key của mỗi phần tử.
 
-- .map((\_, index) => {...}): Đây là một phương thức map được gọi trên mảng 5 phần tử, trong đó mỗi phần tử sẽ là một button "star". Callback function nhận vào hai tham số, nhưng ở đây chỉ sử dụng tham số thứ hai, tức là chỉ số của mỗi phần tử.
+- .map((\_, index) => {...}): Đây là một phương thức map được gọi trên mảng 5 phần tử, trong đó mỗi phần tử sẽ là một button "star". Callback function nhận vào hai tham số, nhưng ở đây chỉ sử dụng tham số thứ hai, tức là index của mỗi phần tử.
 
-- index += 1;: Dòng này tăng index của mỗi button lên một đơn vị. Điều này được thực hiện để đảm bảo index bắt đầu từ 1 thay vì 0.
+- index += 1;: Dòng này tăng của mỗi button lên một đơn vị. Điều này được thực hiện để đảm bảo index bắt đầu từ 1 thay vì 0.
+
+- return (...): Mỗi lần lặp qua, một nút "star" được tạo ra với các thuộc tính và sự kiện như onClick, onMouseEnter, onMouseLeave và onDoubleClick.
+
+- onClick={() => setRating(index)}: Khi nút được nhấp, hàm setRating sẽ được gọi với index của nút.
+
+- onMouseEnter={() => setHover(index)}: Khi di chuột vào nút, hàm setHover sẽ được gọi với index của nút.
+
+- onMouseLeave={() => setHover(rating)}: Khi di chuột rời khỏi nút, hàm setHover sẽ được gọi với giá trị của rating.
+
+- onDoubleClick={() => {...}}: Khi double click vào nút, rating và hover sẽ được đặt về 0.
+
+# Select
+
+```jsx
+<label className="text-headingColor font-bold text-[16px] leading-7">
+  Gender:
+  <select
+    name="gender"
+    className="text-textColor font-semibold text-[15px] leading-7 px-4 py-3 focus:outline-none"
+  >
+    <option value="">Select</option>
+    <option value="male">Male</option>
+    <option value="female">Male</option>
+    <option value="other">Other</option>
+  </select>
+</label>
+```
+
+# Truncate Tailwind
+
+```css
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+```
+
+- Sử dụng truncate để ngăn văn bản bị ngắt dòng và cắt ngắn văn bản tràn bằng dấu chấm lửng (…) nếu cần.
+
+# Button Updoad Photo
+
+```jsx
+const handleFileInputChange = async (e) => {
+  const file = e.target.files[0];
+
+  //later we will use cloudinary to upload images
+  //console.log(file);
+};
+
+<div className="relative w-[130px] h-[50px]">
+  <input
+    type="file"
+    name="photo"
+    id="customFile"
+    onChange={handleFileInputChange}
+    accept=".jpg, .png"
+    className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+  />
+
+  <label
+    htmlFor="customFile"
+    className="absolute top-0 left-0 w-full h-full
+                                    flex items-center px-[0.75rem] py-[0.375rem] text-[15px] leading-6 overflow-hidden
+                                  bg-[#0066FF46] text-headingColor font-semibold rounded-lg cursor-pointer"
+  >
+    Upload Photo
+  </label>
+</div>;
+```
+
+# Ở Contact
+
+- max-w-screen-md
+
+```css
+.max-w-screen-md {
+  max-width: 768px;
+}
+```
+
+- space-y-8
+
+```css
+margin-top: 2rem; /* 32px */
+```
+
+- Thêm không gian ngang giữa children
+  Sử dụng space-x-\* để kiểm soát khoảng cách ngang giữa các phần tử.
+
+-Thêm không gian theo chiều dọc giữa children
+Sử dụng tiện ích space-y-\* để kiểm soát khoảng cách dọc giữa các phần tử

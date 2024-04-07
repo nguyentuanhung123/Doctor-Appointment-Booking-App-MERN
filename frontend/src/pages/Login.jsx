@@ -31,9 +31,9 @@ const Login = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border-b border-solid border-[#0066FF61]
+                            className="w-full py-3 border-b border-solid border-[#0066FF61]
                             focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor
-                            placeholder:text-textColor rounded-md cursor-pointer"
+                            placeholder:text-textColor cursor-pointer"
                             required
                         />
                     </div>
@@ -44,9 +44,9 @@ const Login = () => {
                             name="password"
                             value={formData.password}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border-b border-solid border-[#0066FF61]
+                            className="w-full py-3 border-b border-solid border-[#0066FF61]
                             focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor
-                            placeholder:text-textColor rounded-md cursor-pointer"
+                            placeholder:text-textColor cursor-pointer"
                             required
                         />
                     </div>
@@ -59,7 +59,7 @@ const Login = () => {
                         </button>
                     </div>
                     <p className="mt-5 text-textColor text-center">
-                        Don&apos;t have-an account? 
+                        Don&apos;t have an account? 
                         <Link to='/register' className="text-primaryColor font-medium ml-1">
                             Register
                         </Link>
