@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import mongoose  from 'mongoose';
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken'
+import authRoute from './routes/auth.js'
 
 /**
  * Cấu hình biến môi trường: 
@@ -53,6 +53,7 @@ const connectDB = async () => {
 app.use(express.json()); //ta cần phân tích cú pháp json
 app.use(cookieParser());
 app.use(cors(corsOptions))
+app.use('/api/v1/auth', authRoute) // domain/api/v1/auth/register
 
 app.listen(port, () => {
     connectDB();
