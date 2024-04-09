@@ -51,6 +51,29 @@ export const login = async (req, res) => {
 
 - B3 : Tạo auth.js trong thư mục routes của backend
 
+- B4: Vào file index.js và bổ sung
+
+```jsx
+import authRoute from "./routes/auth.js";
+app.use("/api/v1/auth", authRoute); // domain/api/v1/auth/register
+```
+
+# Cách để tạo một JWT_SECRET_key ngẫu nhiên trên máy
+
+- B1: Vào Terminal (folder tổng)
+- B2: Gõ: node
+- B3: Gõ: crypto.randomBytes(256).toString('base64')
+- B4: Copy tất cả ký tự không bao gồm ''
+- B5: Paste trong file .env
+
+# MongoDB
+
+```jsx
+{ name: { $regex: query, $options: 'i' } }: 
+```
+
+- Đây là một điều kiện tìm kiếm trong đó name là trường dữ liệu trong cơ sở dữ liệu MongoDB, $regex là một toán tử tìm kiếm sử dụng biểu thức chính quy để so khớp các chuỗi, và $options: 'i' là tùy chọn để thực hiện tìm kiếm không phân biệt chữ hoa chữ thường (không phân biệt chữ hoa thường). Điều này có nghĩa là nếu từ khóa tìm kiếm query xuất hiện trong trường name, bất kể là chữ hoa hay chữ thường, thì bản ghi đó sẽ được trả về.
+
 ```jsx
 import express from "express";
 import { register, login } from "../controllers/authController.js";
@@ -63,17 +86,211 @@ router.post("/login", login);
 export default router;
 ```
 
-B4: Vào file index.js và bổ sung
+# Token
+
+- Vấn đề: Bất cứ ai cũng có thể sửa thông tin -> Không được phép làm vậy
+-> Chỉ những người có tài khoản mới có thể sửa (dùng token)
 
 ```jsx
-import authRoute from "./routes/auth.js";
-app.use("/api/v1/auth", authRoute); // domain/api/v1/auth/register
+const authToken = req.headers.authorization
+
+    // check token is exists
+    if(!authToken || !authToken.starsWith('Bearer ')){
+        return res.status(401).json({
+            success: false,
+            message: 'No token, authorization denied'
+        })
+    }
+
+    try{
+        console.log(authToken);
+        next();
+    } catch(error) {
+
+    }
 ```
 
-# Cách để tạo một JWT_SECRET_key ngẫu nhiên trên máy
+- Lấy token từ tiêu đề: Đầu tiên, mã lấy token từ tiêu đề của yêu cầu HTTP bằng cách sử dụng req.headers.authorization.
 
-B1: Vào Terminal (folder tổng)
-B2: Gõ: node
-B3: Gõ: crypto.randomBytes(256).toString('base64')
-B4: Copy tất cả ký tự không bao gồm ''
-B5: Paste trong file .env
+- Kiểm tra token tồn tại: Mã kiểm tra xem token có tồn tại hay không. Nếu không tồn tại hoặc không bắt đầu bằng chuỗi "Bearer ", điều này ngụ ý rằng yêu cầu không được ủy quyền. Trong trường hợp này, mã trả về một phản hồi lỗi 401 (Unauthorized) và thông báo lỗi tương ứng.
+
+- Xác thực thành công: Nếu token hợp lệ, mã sẽ log ra console giá trị của token và gọi hàm next() để chuyển quyền điều khiển đến middleware hoặc hàm xử lý tiếp theo trong chuỗi middleware.
+
+```jsx
+import express from 'express';
+import { updateUser, deleteUser, getAllUser, getSingleUser } from "../controllers/userController.js";
+
+import { authenticate } from '../auth/verifyToken.js';
+
+const router = express.Router()
+
+router.get('/:id', authenticate, getSingleUser);
+router.get('/', getAllUser);
+router.put('/:id', updateUser);
+router.delete('/:id', deleteUser);
+
+export default router;
+```
+
+- Trong đoạn mã trên, nếu ta muốn lấy thông tin cá nhân của user mà chỉ sử dụng hàm Get cho link
+http://localhost:5000/api/v1/users/6612dd05589ae05356f7d5dd
+-> Nó sẽ hiện lỗi: 
+```jsx
+{
+    "success": false,
+    "message": "No token, authorization denied"
+}
+```
+- Luồng xử lý (Thực hiện ở Postman)
+- B1 : Sau khi login sẽ được trả về token (Xem ở authController để biết chi tiết)
+- B2 : Copy token đang được hiện
+- B3 : Vào Authorization ở Navbar trong Postman (bên dưới thanh link của cái muốn làm. Ví dụ ở bên dưới link http://localhost:5000/api/v1/users/6612dd05589ae05356f7d5dd)
+- B4 : Ở thanh select options => Chọn Bearer Token => Có cột Token ở bên phải => Paste cái token vừa copy
+- B5 : Bấm Send để thực hiện lại và nó sẽ không bị lỗi
+
+```jsx
+const token = authToken.split(" ")[1]
+```
+
+-Dòng mã này sử dụng phương thức split() để chia chuỗi authToken thành một mảng các phần dựa trên dấu cách (" "). Sau đó, nó lấy phần tử thứ hai của mảng, tức là phần tử có chỉ số 1, bằng cách sử dụng chỉ số mảng.
+
+- Ở đây, giả sử chuỗi authToken có định dạng "Bearer token_value". Bằng cách sử dụng split(" "), chuỗi sẽ được chia thành một mảng hai phần tử: ["Bearer", "token_value"]. Dòng mã const token = authToken.split(" ")[1] sẽ trích xuất phần tử thứ hai của mảng, tức là "token_value", và lưu trữ nó vào biến token.
+
+- Tóm lại, biến token sẽ chứa giá trị token được trích xuất từ chuỗi authToken.
+
+
+# Hạn chế truy cập
+
+```jsx
+export const restrict = roles => async(req, res, next) => {
+    const userId = req.userId
+    let user;
+
+    const patient = await User.findById(userId)
+    const doctor = await Doctor.findById(userId)
+
+    if(patient){
+        user = patient 
+    }
+    if(doctor){
+        user = doctor
+    }
+
+    if(!roles.include(user.role)){
+        return res.status(401).json({
+            success: false,
+            message: "You're not authorized"
+        })
+    }
+
+    next();
+}
+```
+
+```jsx
+import express from 'express';
+import { updateUser, deleteUser, getAllUser, getSingleUser } from "../controllers/userController.js";
+
+import { authenticate, restrict } from '../auth/verifyToken.js';
+
+const router = express.Router()
+
+router.get('/:id', authenticate, restrict(['patient']), getSingleUser);
+router.get('/', authenticate, restrict(['admin']), getAllUser);
+router.put('/:id', authenticate, restrict(['patient']), updateUser);
+router.delete('/:id', authenticate, restrict(['patient']), deleteUser);
+
+export default router;
+```
+
+```jsx
+import express from 'express';
+import { updateDoctor, deleteDoctor, getAllDoctor, getSingleDoctor } from "../controllers/doctorController.js";
+
+import { authenticate, restrict } from '../auth/verifyToken.js';
+
+const router = express.Router()
+
+router.get('/:id', getSingleDoctor);
+router.get('/', getAllDoctor);
+router.put('/:id', authenticate, restrict(['doctor']), updateDoctor);
+router.delete('/:id', authenticate, restrict(['doctor']), deleteDoctor);
+
+export default router;
+```
+
+# Restrict
+- restrict Function: Đây là một hàm middleware được xuất ra dưới dạng hàm arrow. Nó nhận một mảng roles là danh sách các vai trò mà người dùng được cấp phép truy cập.
+
+- Middleware Function Parameters: Hàm middleware này nhận ba tham số: req, res, và next. req là đối tượng yêu cầu, res là đối tượng phản hồi, và next là một hàm được gọi để chuyển điều khiển sang middleware tiếp theo trong chuỗi middleware.
+
+- Logic: Trong hàm middleware này, nó bắt đầu bằng việc lấy userId từ đối tượng yêu cầu req. Sau đó, nó khởi tạo một biến user để lưu trữ thông tin về người dùng.
+
+- Kiểm tra Vai trò của Người Dùng: Tiếp theo, nó sử dụng userId để tìm người dùng trong cơ sở dữ liệu. Nó tìm kiếm cả trong mô hình User và mô hình Doctor, và gán người dùng tương ứng vào biến user.
+
+- Xác thực Vai trò: Sau khi tìm thấy thông tin người dùng, nó kiểm tra xem vai trò của người dùng có nằm trong danh sách các vai trò đã cấp quyền hay không bằng cách sử dụng phương thức includes() trên mảng roles. Nếu không, nó trả về một phản hồi với mã trạng thái 401 và một thông báo lỗi.
+
+- Chuyển Điều khiển Tiếp theo: Nếu người dùng có vai trò hợp lệ, hàm gọi next() để chuyển điều khiển sang middleware tiếp theo trong chuỗi middleware.
+
+- Hàm này được thiết kế để được sử dụng như một phần của middleware trong việc xác thực và phân quyền trong ứng dụng Express.
+
+# Add review cho bác sĩ
+- B1 : Thêm reviewController và review.js
+
+```jsx
+import express from 'express';
+
+import { getAllReviews, createReview } from '../controllers/reviewController.js';
+import { authenticate, restrict } from '../auth/verifyToken.js';
+
+const router = express.Router({ mergeParams: true });
+
+router
+    .route('/')
+    .get(getAllReviews)
+    .post(authenticate, restrict(['patient']), createReview);
+
+export default router;
+```
+
+- B2 : Sửa lại ở doctor.js
+
+```jsx
+import express from 'express';
+import { updateDoctor, deleteDoctor, getAllDoctor, getSingleDoctor } from "../controllers/doctorController.js";
+
+import { authenticate, restrict } from '../auth/verifyToken.js';
+
+import reviewRouter from './review.js';
+
+const router = express.Router()
+
+// nested route
+router.use('/:doctorId/reviews', reviewRouter);
+
+router.get('/:id', getSingleDoctor);
+router.get('/', getAllDoctor);
+router.put('/:id', authenticate, restrict(['doctor']), updateDoctor);
+router.delete('/:id', authenticate, restrict(['doctor']), deleteDoctor);
+
+export default router;
+```
+
+# Sử dụng tuyến lồng nhau
+- Ví dụ : // doctors/doctorId/reviews -> Sử dụng tuyến lồng nhau
+
+- B1: Ở doctor.js thêm
+```jsx
+// nested route
+router.use('/:doctorId/reviews', reviewRouter);
+```
+- B2: Ở review.js, thêm
+```jsx
+const router = express.Router({ mergeParams: true });
+```
+
+-> Trường review ở Doctor là mảng chứa Id của một loạt review
+
+
+
+
