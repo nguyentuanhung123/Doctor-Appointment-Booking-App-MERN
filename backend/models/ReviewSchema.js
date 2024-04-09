@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Doctor from "./DoctorSchema.js";
 
 const reviewSchema = new mongoose.Schema(
     {
@@ -50,7 +51,7 @@ reviewSchema.statics.calcAverageRatings = async function(doctorId){
             avgRating: {$avg: '$rating'}
         }
     }
-   ])
+   ]);
 
    /**
     * stats là một mảng chứa các object gồm các trường
@@ -58,7 +59,11 @@ reviewSchema.statics.calcAverageRatings = async function(doctorId){
     * numOfRating: số lượng review của doctor đó
     * avgRating: trung bình số sao đánh giá của doctor đó (ví dụ: numOfRating: 6, rating: 16 => avgRating: 2.66666)
     */
-   console.log(stats);
+   //console.log(stats);
+    await Doctor.findByIdAndUpdate(doctorId, {
+        totalRating: stats[0].numOfRating,
+        averageRating: stats[0].avgRating
+    });
 }
 
 reviewSchema.post('save', function() {
