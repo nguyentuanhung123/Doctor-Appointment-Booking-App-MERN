@@ -37,5 +37,33 @@ reviewSchema.pre(/^find/, function(next){
     next();
 });
 
+reviewSchema.statics.calcAverageRatings = async function(doctorId){
+
+    // this points the current review
+    const stats = await this.aggregate([{
+        $match:{doctor: doctorId}
+    },
+    {
+        $group:{
+            _id: '$doctor',
+            numOfRating: {$sum:1},
+            avgRating: {$avg: '$rating'}
+        }
+    }
+   ])
+
+   /**
+    * stats là một mảng chứa các object gồm các trường
+    * _id : id của doctor
+    * numOfRating: số lượng review của doctor đó
+    * avgRating: trung bình số sao đánh giá của doctor đó (ví dụ: numOfRating: 6, rating: 16 => avgRating: 2.66666)
+    */
+   console.log(stats);
+}
+
+reviewSchema.post('save', function() {
+    this.constructor.calcAverageRatings(this.doctor)
+})
+
 
 export default mongoose.model("Review", reviewSchema);
