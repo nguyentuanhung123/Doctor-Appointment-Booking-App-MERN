@@ -109,9 +109,10 @@ export const login = async (req, res) => {
         // get token
         const token = generateToken(user);
 
-        const {password, role, appointments, ...rest} = user._doc;
+        //const {password, role, appointments, ...rest} = user._doc;
+        const {password, role, appointments, ...rest} = user;
 
-        res.status(200).json({
+        return res.status(200).json({
             status: true,
             message: 'Successfully login',
             token,
@@ -120,7 +121,7 @@ export const login = async (req, res) => {
         })
 
     } catch (err){
-        res.status(500).json({
+        return res.status(500).json({
             status: false,
             message: 'Failed to login',
         })
