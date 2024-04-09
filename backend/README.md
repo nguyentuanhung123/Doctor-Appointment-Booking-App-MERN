@@ -291,6 +291,30 @@ const router = express.Router({ mergeParams: true });
 
 -> Trường review ở Doctor là mảng chứa Id của một loạt review
 
+# Ở document Doctor review đang là một mảng chứa id của reviews của doctor đó
+-> Ta muốn hiển thị chi tiết thông tin của các trường trong review 
+-> Trong Review chứa các trường id như ._id, doctor, user => Ta muốn lấy thông tin ảnh và tên của id User đó
+- B1 : Thêm reviewShema
+```jsx
+reviewSchema.pre(/^find/, function(next){
+    this.populate({
+        path: 'user',
+        select: 'name photo'
+    });
+
+    next();
+});
+
+
+export default mongoose.model("Review", reviewSchema);
+```
+
+- B2 : Sửa ở doctorController
+```jsx
+    const doctor = await User.findById(id)
+        .populate("reviews")
+        .select('-password');
+```
 
 
 

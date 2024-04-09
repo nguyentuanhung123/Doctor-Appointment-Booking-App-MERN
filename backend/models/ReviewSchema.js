@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const ReviewSchema = new mongoose.Schema(
+const reviewSchema = new mongoose.Schema(
     {
         doctor: {
             type: mongoose.Types.ObjectId,
@@ -23,8 +23,19 @@ const ReviewSchema = new mongoose.Schema(
         },
     },
     { 
-        imestamps: true 
+        timestamps: true 
     }
 );
 
-export default mongoose.model("Review", ReviewSchema);
+// Trong review lúc này mới chỉ có trường id cho review, doctor and user => ta muốn hiển thị tên và ảnh của user đó
+reviewSchema.pre(/^find/, function(next){
+    this.populate({
+        path: 'user',
+        select: 'name photo'
+    });
+
+    next();
+});
+
+
+export default mongoose.model("Review", reviewSchema);
