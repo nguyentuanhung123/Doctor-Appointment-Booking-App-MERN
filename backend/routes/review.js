@@ -13,6 +13,8 @@ import { authenticate, restrict } from '../auth/verifyToken.js';
 
 const router = express.Router({ mergeParams: true });
 
+// doctors/doctorId/reviews -> Sử dụng tuyến lồng nhau
+
 router
     .route('/')
     .get(getAllReviews)

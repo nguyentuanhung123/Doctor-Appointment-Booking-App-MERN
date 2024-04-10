@@ -311,7 +311,7 @@ export default mongoose.model("Review", reviewSchema);
 
 - B2 : Sửa ở doctorController
 ```jsx
-    const doctor = await User.findById(id)
+    const doctor = await Doctor.findById(id)
         .populate("reviews")
         .select('-password');
 ```

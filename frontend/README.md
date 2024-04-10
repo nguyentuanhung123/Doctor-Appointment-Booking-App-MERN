@@ -546,3 +546,105 @@ margin-top: 2rem; /* 32px */
 Sử dụng tiện ích space-y-\* để kiểm soát khoảng cách dọc giữa các phần tử
 
 - sm:w-fit
+
+# Sử dụng cloudinary để lưu trữ ảnh 
+- Sử dụng tk github có cloud name: nguyentuanhung123
+- Tạo 1 file .env.local 
+- Tạo 1 cloud 
+- B1: Vào trang web chính chủ
+- B2: Ở Navbar bên trái -> Chọn biểu tượng Settings -> Upload -> Upload Presets -> Add upload preset
+- B3: Sửa Upload Preset Name
+- B4: Ở Signing mode -> Chọn Unsigned -> Save
+- Ở folder utils, tạo file uploadCloudinary.jsx và chỉnh sửa
+```jsx
+const upload_preset = import.meta.env.VITE_UPLOAD_PRESET;
+const cloud_name = import.meta.env.VITE_CLOUD_NAME
+
+const uploadImageToCloudinary = async (file) => {
+    const uploadData = new FormData()
+
+    uploadData.append('file', file)
+    uploadData.append('upload_preset', upload_preset)
+    uploadData.append('cloud_name', cloud_name)
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`, {
+        method: 'POST',
+        body: uploadData
+    })
+
+    const data = await res.json()
+
+    return data;
+}
+
+export default uploadImageToCloudinary;
+```
+
+- Quay lại Signup.jsx, import uploadCloudinary.jsx
+
+```jsx
+    const handleFileInputChange = async (e) => {
+        const file = e.target.files[0];
+
+        const data = await uploadImageToCloudinary(file)
+        
+        //console.log(data);
+        setPreviewURL(data.url)
+        setSelectedFile(data.url)
+        setFormData({
+            ...formData,
+            photo: data.url
+        })
+    }
+```
+
+# Tạo nút Button sau khi bấm sẽ có spinner
+```jsx
+import HashLoader from 'react-spinners/HashLoader';
+
+const [loading, setLoading] = useState(false);
+
+
+<button 
+  disabled={loading && true}
+  type="submit" 
+  className="w-full bg-primaryColor text-white text-[18px] leading-[30px] rounded-lg px-4 py-3"
+>
+  { loading ? (
+      <HashLoader size={35} color='#ffffff'/>
+  ) : (
+      'Sign Up'
+  )}
+</button>
+```
+
+# Sử dung Toastify 
+- Vào file main.jsx, sửa
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.jsx';
+import './index.css';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <Router>
+      <ToastContainer
+        theme='dark'
+        position='top-right'
+        autoClose={3000}
+        closeOnClick
+        pauseOnHover={false}
+      />
+      <App />
+    </Router>
+  </React.StrictMode>,
+)
+
+```
+
+
+# Sau khi đăng ký xong thì sử dụng Context
