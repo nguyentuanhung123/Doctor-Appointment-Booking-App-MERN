@@ -765,3 +765,439 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>,
 )
 ```
+
+# Sau khi Login xong sửa lại image ở Header
+- B1: Sau khi Login sẽ có dữ liệu ở authContext
+- B2: Vào Header.jsx và sửa
+```jsx
+import { authContext } from '../../context/AuthContext.jsx';
+
+const { user, role, token } = useContext(authContext);
+
+``` 
+- B3: Ađ thêm thẻ h1 để hiện thị tên user
+
+```jsx
+<h1>{user?.name}</h1>
+                      
+<Link to='/login'>
+  <button className='bg-primaryColor py-2 px-6 text-white font-[600] h-[44px] flex items-center justify-center rounded-[50px]'>
+    Login
+  </button>
+</Link>
+```
+
+# Vấn đề xảy ra, khi refresh thì sẽ bị mất tên và phải đăng nhập lại => Không tốt
+- B1: Xóa thẻ h1 ở trên
+- B2: Ban đầu ta có
+```jsx
+<div className='flex items-center gap-4'>
+  <div className='hidden'>
+      <Link to='/'>
+          <figure className='w-[35px] h-[35px] rounded-full cursor-pointer'>
+              <img src={userImg} className='w-full rounded-full' alt=''/>
+          </figure>
+      </Link>
+  </div>
+                      
+  <Link to='/login'>
+      <button className='bg-primaryColor py-2 px-6 text-white font-[600] h-[44px] flex items-center justify-center rounded-[50px]'>
+          Login
+      </button>
+  </Link>
+
+  <span className='md:hidden' onClick={toggleMenu}>
+      <BiMenu className='w-6 h-6 cursor-pointer'/>
+  </span>
+</div>
+```
+
+- B3: Sửa lại thành
+```jsx
+<div className='flex items-center gap-4'>
+  {
+      token && user ? (
+          <div>
+              <Link to={`${role === 'doctor' ? '/doctors/profile/me': '/users/profile/me'}`}>
+                  <figure className='w-[35px] h-[35px] rounded-full cursor-pointer'>
+                      <img src={user?.photo} className='w-full rounded-full' alt=''/>
+                  </figure>
+
+                  <h2>{user?.name}</h2>
+              </Link>
+          </div>
+      ) : (
+          <Link to='/login'>
+            <button className='bg-primaryColor py-2 px-6 text-white font-[600] h-[44px] flex items-center justify-center rounded-[50px]'>
+                Login
+            </button>
+          </Link>
+      )
+  }
+
+  <span className='md:hidden' onClick={toggleMenu}>
+      <BiMenu className='w-6 h-6 cursor-pointer'/>
+  </span>
+</div>
+```
+
+- B4: Sửa lại ở AuthContext.jsx
+- Ban đầu ta có:
+```jsx
+import { createContext, useContext, useEffect, useReducer } from "react";
+
+const initialState = {
+    user: null,
+    role: null,
+    token: null
+}
+
+export const authContext = createContext(initialState);
+
+const authReducer = (state, action) => {
+    switch(action.type) {
+        case 'LOGIN_START':
+            return {
+                user: null,
+                role: null,
+                token: null
+            };
+        case 'LOGIN_SUCCESS':
+            return {
+                user: action.payload.user,
+                role: action.payload.token,
+                token: action.payload.role
+            };
+        case 'LOGOUT':
+            return {
+                user: null,
+                role: null,
+                token: null
+            };
+        default:
+            return state
+    }
+};
+
+export const AuthContextProvider = ({children}) => {
+    const [state, dispatch] = useReducer(authReducer, initialState);
+
+    return <authContext.Provider value={{user: state.user, token: state.token, role: state.role, dispatch}}>
+        {children}
+    </authContext.Provider>
+}
+```
+
+- Sửa lại thành
+```jsx
+import { createContext, useContext, useEffect, useReducer } from "react";
+
+const initialState = {
+    user: localStorage.getItem('user') !== undefined ? JSON.parse(localStorage.getItem('user')) : null,
+    role: localStorage.getItem('role') || null,
+    token: localStorage.getItem('token') || null,
+}
+
+export const authContext = createContext(initialState);
+
+const authReducer = (state, action) => {
+    switch(action.type) {
+        case 'LOGIN_START':
+            return {
+                user: null,
+                role: null,
+                token: null
+            };
+        case 'LOGIN_SUCCESS':
+            return {
+                user: action.payload.user,
+                role: action.payload.token,
+                token: action.payload.role
+            };
+        case 'LOGOUT':
+            return {
+                user: null,
+                role: null,
+                token: null
+            };
+        default:
+            return state
+    }
+};
+
+export const AuthContextProvider = ({children}) => {
+    const [state, dispatch] = useReducer(authReducer, initialState);
+
+    useEffect(() => {
+        localStorage.setItem('user', JSON.stringify(state.user));
+        localStorage.setItem('token', JSON.stringify(state.token));
+        localStorage.setItem('role', JSON.stringify(state.role));
+    }, [state]);
+
+    return <authContext.Provider value={{user: state.user, token: state.token, role: state.role, dispatch}}>
+        {children}
+    </authContext.Provider>
+}
+
+```
+
+# Chuyển đến trang cá nhân sau khi đăng nhập thành công
+- B1: Xóa thẻ h2 vừa tạo ở Header
+- B2: Vào thẻ Login.jsx và sửa
+- Ban đầu
+```jsx
+<div className="mt-7">
+  <button 
+    type="submit" 
+    className="w-full bg-primaryColor text-white text-[18px] leading-[30px] rounded-lg px-4 py-3"
+  >
+      Login
+  </button>
+</div>
+```
+- Sửa thành
+```jsx
+<div className="mt-7">
+  <button 
+    type="submit" 
+    className="w-full bg-primaryColor text-white text-[18px] leading-[30px] rounded-lg px-4 py-3"
+  >
+      { loading ? <HashLoader /> : 'Login'}
+  </button>
+</div>
+```
+
+- B3: Vaò userController.js ở backend bổ sung
+```jsx
+export const getUserProfile = async(req, res) => {
+    const userId = req.userId;
+
+    try{
+        const user = await User.findById(userId)
+
+        if(!user){
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            })
+        }
+
+        const { password, ...rest } = user._doc
+
+        return res.status(200).json({
+            success: true,
+            message: 'Profile info is getting',
+            data: {...rest}
+        })
+
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: 'Something went wrong, cannot get'
+        });
+    }
+}
+
+export const getMyAppointments = async(req, res) => {
+    try{
+        // step -1: retrieve appoinments from booking for specific user
+        const bookings = await Booking.find({user: req.userId})
+
+        // step -2: extract doctor ids from appoinment bookings
+        const doctorIds = bookings.map((el) => el.doctor.id)
+
+        // step -3: retrieve doctors using doctor ids
+        const doctors = await Doctor.find({_id: {$in: doctorIds}}).select('-password')
+
+        return res.status(200).json({
+            success: true,
+            message: 'Appointments are getting',
+            data: doctors
+        })
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: 'Something went wrong, cannot get'
+        });
+    }
+}
+```
+
+- B4: Vào user.js của backend
+- Ban đầu
+```jsx
+import express from 'express';
+import { updateUser, deleteUser, getAllUser, getSingleUser } from "../controllers/userController.js";
+
+import { authenticate, restrict } from '../auth/verifyToken.js';
+
+const router = express.Router()
+
+router.get('/:id', authenticate, restrict(['patient']), getSingleUser);
+router.get('/', authenticate, restrict(['admin']), getAllUser);
+router.put('/:id', authenticate, restrict(['patient']), updateUser);
+router.delete('/:id', authenticate, restrict(['patient']), deleteUser);
+
+export default router;
+```
+
+- Sửa lại thành:
+```jsx
+import express from 'express';
+import { updateUser, deleteUser, getAllUser, getSingleUser, getUserProfile, getMyAppointments } from "../controllers/userController.js";
+
+import { authenticate, restrict } from '../auth/verifyToken.js';
+
+const router = express.Router()
+
+router.get('/:id', authenticate, restrict(['patient']), getSingleUser);
+router.get('/', authenticate, restrict(['admin']), getAllUser);
+router.put('/:id', authenticate, restrict(['patient']), updateUser);
+router.delete('/:id', authenticate, restrict(['patient']), deleteUser);
+router.get('/profile/me', authenticate, restrict(['patient']), getUserProfile);
+router.delete('/appointments/my-appointments', authenticate, restrict(['patient']), getMyAppointments);
+
+export default router;
+```
+
+- B5: Sửa lại doctorController.js
+- Ban đầu:
+```jsx
+import Doctor from "../models/DoctorSchema.js";
+
+export const updateDoctor = async(req, res) => {
+    const id = req.params.id;
+
+    try{
+        const updatedDoctor = await Doctor.findByIdAndUpdate(
+            id, 
+            { $set:req.body }, 
+            { new: true }
+        )
+
+        return res.status(200).json({
+            success: true,
+            message: 'Successfully updated',
+            data: updatedDoctor
+        })
+    } catch(err) {
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to update'
+        })
+    }
+}
+
+export const deleteDoctor = async(req, res) => {
+    const id = req.params.id;
+
+    try{
+        await Doctor.findByIdAndDelete(id)
+
+        return res.status(200).json({
+            success: true,
+            message: 'Successfully deleted',
+        })
+    } catch(err) {
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to update'
+        })
+    }
+}
+
+export const getSingleDoctor = async(req, res) => {
+    const id = req.params.id;
+
+    try{
+        const doctor = await Doctor.findById(id)
+            .populate("reviews")
+            .select('-password');
+
+        return res.status(200).json({
+            success: true,
+            message: 'Doctor found',
+            data: doctor,
+        })
+    } catch(err) {
+        return res.status(404).json({
+            success: false,
+            message: 'No doctor found'
+        })
+    }
+}
+
+export const getAllDoctor = async(req, res) => {
+
+    try{
+
+        /**
+         * Search doctor on Web
+         */
+        const { query } = req.query;
+        let doctors;
+
+        if(query){
+            doctors = await Doctor.find({
+                isApproved: 'approved', 
+                $or: [
+                    { name: { $regex: query, $options: 'i' } },
+                    { specialization: { $regex: query, $options: 'i' } },
+                ],
+            }).select('-password');
+        } else {
+            doctors = await Doctor.find({ isApproved: 'approved' }).select('-password');
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Doctors found',
+            data: doctors,
+        })
+    } catch(err) {
+        return res.status(404).json({
+            success: false,
+            message: 'Not found'
+        })
+    }
+}
+```
+
+- Sửa lại thành
+```jsx
+export const getDoctorProfile = async(req, res) => {
+    const doctorId = req.userId;
+
+    try{
+        const doctor = await Doctor.findById(doctorId)
+
+        if(!doctor){
+            return res.status(404).json({
+                success: false,
+                message: 'Doctor not found'
+            })
+        }
+
+        const { password, ...rest } = doctor._doc;
+
+        const appointments = await Booking.find({doctor: doctorId})
+
+        return res.status(200).json({
+            success: true,
+            message: 'Profile info is getting',
+            data: {...rest, appointments}
+        })
+
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: 'Something went wrong, cannot get'
+        });
+    }
+```
+
+- B6: Sửa lại ở doctor.js
+```jsx
+router.get('/profile/me', authenticate, restrict(['doctor']), getDoctorProfile);
+```
+
