@@ -648,3 +648,120 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 
 # Sau khi đăng ký xong thì sử dụng Context
+- Tạo file AuthContext.jsx trong folder context
+```jsx
+import { createContext, useContext, useEffect, useReducer } from "react";
+
+const initialState = {
+    user: null,
+    role: null,
+    token: null
+}
+
+export const authContext = createContext(initialState);
+
+const authReducer = (state, action) => {
+    switch(action.type) {
+        case 'LOGIN_START':
+            return {
+                user: null,
+                role: null,
+                token: null
+            };
+        case 'LOGIN_SUCCESS':
+            return {
+                user: action.payload.user,
+                role: action.payload.token,
+                token: action.payload.role
+            };
+        case 'LOGOUT':
+            return {
+                user: null,
+                role: null,
+                token: null
+            };
+        default:
+            return state
+    }
+};
+
+export const AuthContextProvider = ({children}) => {
+    const [state, dispatch] = useReducer(authReducer, initialState);
+
+    return <authContext.Provider value={{user: state.user, token: state.token, role: state.role, dispatch}}>
+        {children}
+    </authContext.Provider>
+}
+```
+
+- B2: Vào file Login.jsx
+```jsx
+    const submitHandler = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try{
+            const res = await fetch(`${BASE_URL}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+
+            const result = await res.json()
+
+            if(!res.ok) {
+                throw new Error(result.message)
+            }
+
+            dispatch({
+                type: 'LOGIN_SUCCESS',
+                payload: {
+                    user: result.data,
+                    token: result.token,
+                    role: result.role
+                }
+            });
+
+            console.log(result, "login data");
+
+            setLoading(false);
+            toast.success(result.message);
+            navigate('/home')
+
+        } catch(err){
+            toast.error(err.message);
+            setLoading(false)
+        }
+    }
+```
+
+- B3: Vào main.jsx, sửa lại
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.jsx';
+import './index.css';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { AuthContextProvider } from './context/AuthContext.jsx';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <Router>
+      <AuthContextProvider>
+        <ToastContainer
+          theme='dark'
+          position='top-right'
+          autoClose={3200}
+          closeOnClick
+          pauseOnHover={false}
+        />
+        <App />
+      </AuthContextProvider>
+    </Router>
+  </React.StrictMode>,
+)
+```

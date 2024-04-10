@@ -159,7 +159,7 @@ const Signup = () => {
                                     >
                                         <option value="">Select</option>
                                         <option value="male">Male</option>
-                                        <option value="female">Male</option>
+                                        <option value="female">Female</option>
                                         <option value="other">Other</option>
                                     </select>
                                 </label>
@@ -173,7 +173,7 @@ const Signup = () => {
                                             <img 
                                                 src={previewURL} 
                                                 alt="" 
-                                                className='w-full rounded-full'/>
+                                                className='w-full h-full rounded-full'/>
                                         </figure>
                                     )
                                 }
