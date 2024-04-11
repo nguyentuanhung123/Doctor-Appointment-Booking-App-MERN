@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import HashLoader from 'react-spinners/HashLoader';
 import uploadImageToCloudinary from '../utils/uploadCloudinary';
 
-import { BASE_URL } from '../../config.js';
+import { BASE_URL } from '../config.js';
 
 
 const Signup = () => {
@@ -21,7 +21,7 @@ const Signup = () => {
         password: '',
         photo: selectedFile,
         gender: '',
-        role: ''
+        role: 'patient'
     })
 
     const navigate = useNavigate();
