@@ -21,7 +21,7 @@ const Signup = () => {
         password: '',
         photo: selectedFile,
         gender: '',
-        role: 'patient'
+        role: ''
     })
 
     const navigate = useNavigate();

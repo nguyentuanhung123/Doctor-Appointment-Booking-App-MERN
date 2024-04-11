@@ -1201,3 +1201,63 @@ export const getDoctorProfile = async(req, res) => {
 router.get('/profile/me', authenticate, restrict(['doctor']), getDoctorProfile);
 ```
 
+# Sử dụng Protected Route
+B1: Tạo file ProtectedRoute.jsx
+```jsx
+import { useContext } from "react";
+import { Navigate } from 'react-router-dom';
+import { authContext } from "../context/AuthContext"
+
+const ProtectedRoute = ({children, allowedRoles}) => {
+
+    const { token, role } = useContext(authContext);
+
+    const isAllowed = allowedRoles.includes(role);
+
+    const accessibleRoute = token && isAllowed ? children : <Navigate to='/login' replace={true}/>
+
+    return accessibleRoute;
+}
+
+export default ProtectedRoute;
+```
+
+B2: Vào Route.js, sửa:
+```jsx
+import { Routes, Route } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
+
+const Routers = () => {
+    return (
+        <Routes>
+            <Route path='/' element={<Home />}/>
+            <Route path='/home' element={<Home />}/>
+            <Route path='/doctors' element={<Doctors />}/>
+            <Route path='/doctors/:id' element={<DoctorDetails />}/>
+            <Route path='/login' element={<Login />}/>
+            <Route path='/contact' element={<Contact />}/>
+            <Route path='/register' element={<Signup />}/>
+            <Route path='/services' element={<Services />}/>
+            <Route 
+                path='/users/profile/me' 
+                element={
+                    <ProtectedRoute allowedRoles={['patient']}>
+                        <MyAccount />
+                    </ProtectedRoute>
+                }
+            />
+            <Route 
+                path='/doctors/profile/me' 
+                element={
+                    <ProtectedRoute allowedRoles={['doctor']}>
+                        <Dashboard />
+                    </ProtectedRoute>
+                }
+            />
+        </Routes>
+    )
+}
+
+export default Routers;
+```
+

@@ -133,3 +133,11 @@ export const getMyAppointments = async(req, res) => {
     }
 }
 
+/**
+ * Trong schema của bạn, trường doctor trong các cuộc hẹn được tham chiếu tới một đối tượng ObjectId thay vì trực tiếp đến đối tượng bác sĩ. 
+ * Do đó, khi bạn gọi el.doctor, bạn sẽ nhận được một đối tượng ObjectId đại diện cho bác sĩ được chỉ định cho cuộc hẹn đó, chứ không phải là toàn bộ đối tượng bác sĩ.
+ * Vì vậy, khi bạn muốn trích xuất các id của các bác sĩ từ các cuộc hẹn đã đặt, bạn cần gọi el.doctor.id để truy cập vào trường ObjectId và lấy ra id của bác sĩ. 
+ * Nếu bạn chỉ gọi el.doctor, bạn sẽ nhận được các đối tượng ObjectId chứ không phải là các id của các bác sĩ.
+ * Do đó, bạn sử dụng bookings.map((el) => el.doctor.id) để lấy ra một mảng các id của các bác sĩ từ mảng các cuộc hẹn bookings.
+ */
+
