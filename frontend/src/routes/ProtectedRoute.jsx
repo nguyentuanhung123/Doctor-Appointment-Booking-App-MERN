@@ -19,10 +19,8 @@ const ProtectedRoute = ({children, allowedRoles}) => {
 
     console.log('Token: ', token); // "\"\\\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MTY1ZGViYmY4N2VhOWI5ZGEyMTgwMSIsInJvbGUiOiJwYXRpZW50IiwiaWF0IjoxNzEyODE3ODYzLCJleHAiOjE3MTQxMTM4NjN9.mH58iRyX12HwoCldpx104VJL3vaQGb5He_v6l8kvt-k\\\"\""
     console.log('Role: ', role); // "\"\\\"patient\\\"\""
-    // Check if role is null before attempting to manipulate it
-    const normalizedRole = role ? role.replace(/\\/g, '').replace(/"/g, '') : '';
-    const isAllowed = allowedRoles.includes(normalizedRole);
-    // If user is not authenticated or doesn't have the required role, navigate to '/login' with replace option
+    //const normalizedRole = role.replace(/\\/g, '').replace(/"/g, '');
+    const isAllowed = allowedRoles.includes(role);
     const accessibleRoute = token && isAllowed ? children : <Navigate to='/login' replace={true}/>;
     return accessibleRoute;
 }

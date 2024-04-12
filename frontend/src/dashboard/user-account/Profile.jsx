@@ -1,13 +1,17 @@
 
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import HashLoader from 'react-spinners/HashLoader';
 import uploadImageToCloudinary from '../../utils/uploadCloudinary';
 
-import { BASE_URL, token } from '../../config.js';
+//import { BASE_URL, token } from '../../config.js';
+import { BASE_URL} from '../../config.js';
+import { authContext } from '../../context/AuthContext.jsx';
 
 const Profile = ({user}) => {
+
+  const { token } = useContext(authContext);
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -117,7 +121,8 @@ const Profile = ({user}) => {
                 className="w-full pr-4 py-3 border-b border-solid border-[#0066FF61]
                 focus:outline-none focus:border-b-primaryColor text-[16px] leading-7 text-headingColor
               placeholder:text-textColor cursor-pointer"
-                required
+                aria-readonly
+                readOnly
             />
         </div>
         <div className="mb-5">

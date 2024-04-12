@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 const generateToken = user => {
+    //console.log("User._id: ", user._id); //User._id:  new ObjectId('661830dedfa02151940629d5')
+    //console.log("User.role: ", user.role); //User.role:  patient
     return jwt.sign({id: user._id, role:user.role}, process.env.JWT_SECRET_KEY, {
         expiresIn: '15d',
     })

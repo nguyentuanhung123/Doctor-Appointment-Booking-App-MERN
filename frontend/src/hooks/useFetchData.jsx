@@ -1,15 +1,18 @@
-import {useEffect, useState} from 'react';
-import { token } from '../config';
+import {useContext, useEffect, useState} from 'react';
+import { authContext } from '../context/AuthContext';
+//import { token } from '../config';
 
 const useFetchData = (url) => {
+
+    const { token } = useContext(authContext);
    
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     
     // Parse the token to remove extra escape characters and double quotes
-    const parsedToken = token.replace(/\\"/g, '').replace(/\\/g, '').replace(/"/g, '');
-    //console.log('parsedToken in LocalStorage: ', parsedToken);
+    //const parsedToken = token.replace(/\\"/g, '').replace(/\\/g, '').replace(/"/g, '');
+    //console.log('Token in useContext useFetchData: ', token);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -18,7 +21,7 @@ const useFetchData = (url) => {
             try {
 
                 const res = await fetch(url, {
-                    headers: {Authorization : `Bearer ${parsedToken}`}
+                    headers: {Authorization : `Bearer ${token}`}
                 })
     
                 const result = await res.json();

@@ -141,3 +141,9 @@ export const getMyAppointments = async(req, res) => {
  * Do đó, bạn sử dụng bookings.map((el) => el.doctor.id) để lấy ra một mảng các id của các bác sĩ từ mảng các cuộc hẹn bookings.
  */
 
+/**
+ * Cảm ơn bạn đã cung cấp lược đồ. Với cấu trúc lược đồ bạn đã chia sẻ, trong đó trường bác sĩ là tham chiếu đến một bộ sưu tập khác (Bác sĩ), có vẻ như booking.doctor sẽ là object ID tham chiếu đến một document trong collection Bác sĩ.
+ * Trong trường hợp đó, để truy cập id của tài liệu Doctor liên quan đến việc đặt chỗ, bạn thực sự sẽ sử dụng booking.doctor.id. Điều này là do booking.doctor là một phiên bản Mongoose ObjectID tham chiếu đến tài liệu Doctor và việc truy cập .id trên đó mang lại bạn biểu diễn chuỗi của ObjectID.
+ * Điều này sẽ cung cấp cho bạn một mảng ID bác sĩ được liên kết với các đăng ký. Mỗi đối tượng đăng ký chứa một trường bác sĩ, tham chiếu đến tài liệu Doctor và .id truy xuất chuỗi biểu diễn ObjectID của tài liệu Doctor đó.
+ */
+

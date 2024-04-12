@@ -22,6 +22,7 @@ export const authenticate = async (req, res, next) => {
         // verify token
         const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
+        //console.log("Decode: ", decode); //{ id: '6612dd05589ae05356f7d5dd', role: 'patient',iat: 1712659278, exp: 1713955278}
         req.userId = decode.id
         req.role = decode.role
 
@@ -53,6 +54,7 @@ export const authenticate = async (req, res, next) => {
 
 export const restrict = roles => async(req, res, next) => {
     const userId = req.userId
+    //console.log("UserID: ", userId); //UserID:  6612dd05589ae05356f7d5dd
     let user;
 
     const patient = await User.findById(userId)
