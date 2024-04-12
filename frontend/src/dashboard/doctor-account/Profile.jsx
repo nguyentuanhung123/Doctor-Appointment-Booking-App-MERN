@@ -11,10 +11,11 @@ const Profile = () => {
         gender: '',
         specialization: '',
         ticketPrice: 0,
-        qualification: [
-            { startingDate: '', endingDate: '', degree: '', university: ''}
+        qualifications: [
+            //{ startingDate: '', endingDate: '', degree: '', university: ''} // index 0
+            //{ startingDate: '', endingDate: '', degree: '', university: ''} // index 1
         ],
-        experience: [
+        experiences: [
             { startingDate: '', endingDate: '', position: '', hospital: ''}
         ],
         timeSlots: [
@@ -37,6 +38,59 @@ const Profile = () => {
 
     const updateProfileHandler = async (e) => {
         e.preventDefault()
+    }
+
+    //reseuble function for adding item
+    const addItem = (key, item) => {
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [key]: [...prevFormData[key], item]
+        }))
+    }
+
+    // reusable input change Dunction
+    const handleReusableInputChangeFunc = (key, index, event) => {
+
+        const {name, value} = event.target
+
+        setFormData(prevFormData => {
+            const updateItems = [...prevFormData[key]]
+
+            updateItems[index][name] = value;
+
+            return {
+                ...prevFormData,
+                [key]: updateItems,
+            };
+        });
+    };
+
+    //reusable function for deleting item
+    const deleteItem = (key, index) => {
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [key]: prevFormData[key].filter((_,i) => i !== index)
+        }));
+    }
+
+    const addQualification = (e) => {
+        e.preventDefault();
+        addItem('qualifications', {
+            startingDate: '', 
+            endingDate: '', 
+            degree: 'PHD', 
+            university: 'Dhaka Medical College'
+        })
+    }
+
+    const handleQualificationChange = (event, index) => {
+        handleReusableInputChangeFunc('qualifications', index, event)
+    }
+
+    const deleteQualification = (e, index) => {
+        e.preventDefault();
+        
+        deleteItem('qualifications', index)
     }
 
     return (
@@ -143,7 +197,7 @@ const Profile = () => {
                 <div className='mb-5'>
                     <p className='form__label'>Qualification*</p>
                     {
-                        formData.qualification?.map((item, index) => (
+                        formData.qualifications?.map((item, index) => (
                             <div key={index}>
                                 <div>
                                     <div className='grid grid-cols-2 gap-5'>
@@ -154,6 +208,7 @@ const Profile = () => {
                                                 name='startingDate'
                                                 value={item.startingDate}
                                                 className='form__input'
+                                                onChange={(e) => handleQualificationChange(e, index)}
                                             />
                                         </div>
                                         <div>
@@ -163,6 +218,7 @@ const Profile = () => {
                                                 name='endingDate'
                                                 value={item.endingDate}
                                                 className='form__input'
+                                                onChange={(e) => handleQualificationChange(e, index)}
                                             />
                                         </div>
                                     </div>
@@ -174,6 +230,7 @@ const Profile = () => {
                                                 name='degree'
                                                 value={item.degree}
                                                 className='form__input'
+                                                onChange={(e) => handleQualificationChange(e, index)}
                                             />
                                         </div>
                                         <div>
@@ -183,11 +240,15 @@ const Profile = () => {
                                                 name='university'
                                                 value={item.university}
                                                 className='form__input'
+                                                onChange={(e) => handleQualificationChange(e, index)}
                                             />
                                         </div>
                                     </div>
 
-                                    <button className='bg-red-600 p-2 rounded-full text-white text-[18px] mt-2 mb-[30px] cursor-pointer'>
+                                    <button 
+                                        onClick={(e) => deleteQualification(e, index)}
+                                        className='bg-red-600 p-2 rounded-full text-white text-[18px] mt-2 mb-[30px] cursor-pointer'
+                                    >
                                         <AiOutlineDelete />
                                     </button>
                                 </div>
@@ -195,7 +256,10 @@ const Profile = () => {
                         ))
                     }
 
-                    <button className='bg-[#000] py-2 px-5 rounded text-white h-fit cursor-pointer'>
+                    <button 
+                        onClick={addQualification}
+                        className='bg-[#000] py-2 px-5 rounded text-white h-fit cursor-pointer'
+                    >
                         Add Qualification
                     </button>
                 </div>
