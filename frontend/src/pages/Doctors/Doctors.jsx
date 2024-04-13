@@ -7,19 +7,29 @@ import { BASE_URL } from '../../config';
 import useFetchData from '../../hooks/useFetchData';
 import Loading from '../../components/Loader/Loading';
 import Error from '../../components/Error/Error';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const Doctors = () => {
 
     const [query, setQuery] = useState('');
+    const [debounceQuery, setDebounceQuery] = useState('');
 
-    const {data: doctors, loading, error} = useFetchData(`${BASE_URL}/doctors?query=${query}`)
+    const {data: doctors, loading, error} = useFetchData(`${BASE_URL}/doctors?query=${debounceQuery}`)
 
     const handleSearch = () => {
         setQuery(query.trim())
 
         console.log('handle search');
     }
+
+    useEffect(() => {
+
+        const timeout = setTimeout(() => {
+            setDebounceQuery(query)
+        }, 700)
+
+        return () => clearTimeout(timeout)
+    }, [query])
 
 
     return (

@@ -1644,3 +1644,26 @@ export const getAllDoctor = async(req, res) => {
     }
 }
 ```
+
+# Add debounce for search doctor
+```jsx
+const [query, setQuery] = useState('');
+const [debounceQuery, setDebounceQuery] = useState('');
+
+const {data: doctors, loading, error} = useFetchData(`${BASE_URL}/doctors?query=${debounceQuery}`)
+
+const handleSearch = () => {
+    setQuery(query.trim())
+
+    console.log('handle search');
+}
+
+useEffect(() => {
+
+    const timeout = setTimeout(() => {
+        setDebounceQuery(query)
+    }, 700)
+
+    return () => clearTimeout(timeout)
+}, [query])
+```
