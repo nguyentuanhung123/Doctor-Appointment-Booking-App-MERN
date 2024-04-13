@@ -1,11 +1,18 @@
-import  { useState } from 'react'
-import { AiOutlineDelete } from 'react-icons/ai'
+import  { useContext, useState } from 'react';
+import { AiOutlineDelete } from 'react-icons/ai';
+import uploadImageToCloudinary from '../../utils/uploadCloudinary.jsx';
+import { BASE_URL } from '../../config.js';
+import { authContext } from '../../context/AuthContext.jsx';
+import {toast} from 'react-toastify'
 
-const Profile = () => {
+const Profile = ({doctorData}) => {
+
+    const { token } = useContext(authContext);
 
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        password: '',
         phone: '',
         bio: '',
         gender: '',
@@ -16,10 +23,10 @@ const Profile = () => {
             //{ startingDate: '', endingDate: '', degree: '', university: ''} // index 1
         ],
         experiences: [
-            { startingDate: '', endingDate: '', position: '', hospital: ''}
+            //{ startingDate: '', endingDate: '', position: '', hospital: ''}
         ],
         timeSlots: [
-            { day: '', startingTime: '', endingTime: '',}
+            // { day: '', startingTime: '', endingTime: '',}
         ],
         about: '',
         photo: null
@@ -32,12 +39,41 @@ const Profile = () => {
         })
     }
 
-    const handleFileInputChange = (e) => {
+    const handleFileInputChange = async (event) => {
+        const file = event.target.files[0];
+        const data = await uploadImageToCloudinary(file);
 
+        //console.log(data);
+        setFormData({
+            ...formData,
+            photo: data?.url
+        })
     }
 
     const updateProfileHandler = async (e) => {
         e.preventDefault()
+
+        try{
+            const res = await fetch(`${BASE_URL}/doctors/${doctorData._id}`, {
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
+            })
+
+            const result = await res.json()
+
+            if(!res.ok){
+                throw Error(result.message)
+            }
+
+            toast.success(result.message)
+
+        } catch(err) {
+            toast.error(err.message)
+        }
     }
 
     //reseuble function for adding item
@@ -85,12 +121,51 @@ const Profile = () => {
 
     const handleQualificationChange = (event, index) => {
         handleReusableInputChangeFunc('qualifications', index, event)
-    }
+    };
 
     const deleteQualification = (e, index) => {
         e.preventDefault();
         
         deleteItem('qualifications', index)
+    };
+
+    const addExperience = (e) => {
+        e.preventDefault();
+        addItem('experiences', { 
+            startingDate: '', 
+            endingDate: '', 
+            position: 'Senior Surgeon', 
+            hospital: 'Dhaka Medical'
+        })
+    }
+
+    const handleExperienceChange = (event, index) => {
+        handleReusableInputChangeFunc('experiences', index, event)
+    }
+
+    const deleteExperience = (e, index) => {
+        e.preventDefault();
+        
+        deleteItem('experiences', index)
+    }
+
+    const addTimeSlot = (e) => {
+        e.preventDefault();
+        addItem('timeSlots', { 
+            day: 'Sunday', 
+            startingTime: '10:00', 
+            endingTime: '04:30',
+        })
+    }
+
+    const handleTimeSlotChange = (event, index) => {
+        handleReusableInputChangeFunc('timeSlots', index, event)
+    }
+
+    const deleteTimeSlot = (e, index) => {
+        e.preventDefault();
+        
+        deleteItem('timeSlots', index)
     }
 
     return (
@@ -267,7 +342,7 @@ const Profile = () => {
                 <div className='mb-5'>
                     <p className='form__label'>Experiences*</p>
                     {
-                        formData.experience?.map((item, index) => (
+                        formData.experiences?.map((item, index) => (
                             <div key={index}>
                                 <div>
                                     <div className='grid grid-cols-2 gap-5'>
@@ -278,6 +353,7 @@ const Profile = () => {
                                                 name='startingDate'
                                                 value={item.startingDate}
                                                 className='form__input'
+                                                onChange={(e) => handleExperienceChange(e, index)}
                                             />
                                         </div>
                                         <div>
@@ -287,6 +363,7 @@ const Profile = () => {
                                                 name='endingDate'
                                                 value={item.endingDate}
                                                 className='form__input'
+                                                onChange={(e) => handleExperienceChange(e, index)}
                                             />
                                         </div>
                                     </div>
@@ -298,6 +375,7 @@ const Profile = () => {
                                                 name='position'
                                                 value={item.position}
                                                 className='form__input'
+                                                onChange={(e) => handleExperienceChange(e, index)}
                                             />
                                         </div>
                                         <div>
@@ -307,11 +385,14 @@ const Profile = () => {
                                                 name='hospital'
                                                 value={item.hospital}
                                                 className='form__input'
+                                                onChange={(e) => handleExperienceChange(e, index)}
                                             />
                                         </div>
                                     </div>
 
-                                    <button className='bg-red-600 p-2 rounded-full text-white text-[18px] mt-2 mb-[30px] cursor-pointer'>
+                                    <button
+                                        onClick={(e) => deleteExperience(e, index)} 
+                                        className='bg-red-600 p-2 rounded-full text-white text-[18px] mt-2 mb-[30px] cursor-pointer'>
                                         <AiOutlineDelete />
                                     </button>
                                 </div>
@@ -319,7 +400,9 @@ const Profile = () => {
                         ))
                     }
 
-                    <button className='bg-[#000] py-2 px-5 rounded text-white h-fit cursor-pointer'>
+                    <button 
+                        onClick={addExperience}
+                        className='bg-[#000] py-2 px-5 rounded text-white h-fit cursor-pointer'>
                         Add Experience
                     </button>
                 </div>
@@ -333,7 +416,12 @@ const Profile = () => {
                                     <div className='grid grid-cols-2 md:grid-cols-4 mb-[30px] gap-5'>
                                         <div>
                                             <p className='form__label'>Day*</p>
-                                            <select name='day' value={item.day} className='form__input py-3.5'>
+                                            <select 
+                                                name='day' 
+                                                value={item.day} 
+                                                className='form__input py-3.5'
+                                                onChange={(e) => handleTimeSlotChange(e, index)}
+                                            >
                                                 <option value=''>Select</option>
                                                 <option value='saturday'>Saturday</option>
                                                 <option value='sunday'>Sunday</option>
@@ -351,6 +439,7 @@ const Profile = () => {
                                                 name='startingTime'
                                                 value={item.startingTime}
                                                 className='form__input'
+                                                onChange={(e) => handleTimeSlotChange(e, index)}
                                             />
                                         </div>
                                         <div>
@@ -360,10 +449,13 @@ const Profile = () => {
                                                 name='engdingTime'
                                                 value={item.engdingTime}
                                                 className='form__input'
+                                                onChange={(e) => handleTimeSlotChange(e, index)}
                                             />
                                         </div>
-                                        <div className='flex items-center '>
-                                            <button className='bg-red-600 p-2 rounded-full text-white text-[18px] cursor-pointer mt-6'>
+                                        <div className='flex items-center'>
+                                            <button
+                                                onClick={(e) => deleteTimeSlot(e, index)}  
+                                                className='bg-red-600 p-2 rounded-full text-white text-[18px] cursor-pointer mt-6'>
                                                 <AiOutlineDelete />
                                             </button>
                                         </div>
@@ -373,7 +465,9 @@ const Profile = () => {
                         ))
                     }
 
-                    <button className='bg-[#000] py-2 px-5 rounded text-white h-fit cursor-pointer'>
+                    <button
+                        onClick={addTimeSlot} 
+                        className='bg-[#000] py-2 px-5 rounded text-white h-fit cursor-pointer'>
                         Add Timeslot
                     </button>
                 </div>
