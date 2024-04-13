@@ -1282,3 +1282,295 @@ const ProtectedRoute = ({children, allowedRoles}) => {
     return accessibleRoute;
 }
 ```
+
+# Edit Profile
+```jsx
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        phone: '',
+        bio: '',
+        gender: '',
+        specialization: '',
+        ticketPrice: 0,
+        qualifications: [
+            //{ startingDate: '', endingDate: '', degree: '', university: ''} // index 0
+            //{ startingDate: '', endingDate: '', degree: '', university: ''} // index 1
+        ],
+        experiences: [
+            //{ startingDate: '', endingDate: '', position: '', hospital: ''}
+        ],
+        timeSlots: [
+            // { day: '', startingTime: '', endingTime: '',}
+        ],
+        about: '',
+        photo: null
+    })
+
+    const handleInputChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    const handleFileInputChange = async (event) => {
+        const file = event.target.files[0];
+        const data = await uploadImageToCloudinary(file);
+
+        //console.log(data);
+        setFormData({
+            ...formData,
+            photo: data?.url
+        })
+    }
+
+    const updateProfileHandler = async (e) => {
+        e.preventDefault()
+
+        try{
+            const res = await fetch(`${BASE_URL}/doctors/${doctorData._id}`, {
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
+            })
+
+            const result = await res.json()
+
+            if(!res.ok){
+                throw Error(result.message)
+            }
+
+            toast.success(result.message)
+
+        } catch(err) {
+            toast.error(err.message)
+        }
+    }
+
+    //reseuble function for adding item
+    const addItem = (key, item) => {
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [key]: [...prevFormData[key], item]
+        }))
+    }
+
+    // reusable input change Dunction
+    const handleReusableInputChangeFunc = (key, index, event) => {
+
+        const {name, value} = event.target
+
+        setFormData(prevFormData => {
+            const updateItems = [...prevFormData[key]]
+
+            updateItems[index][name] = value;
+
+            return {
+                ...prevFormData,
+                [key]: updateItems,
+            };
+        });
+    };
+
+    //reusable function for deleting item
+    const deleteItem = (key, index) => {
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [key]: prevFormData[key].filter((_,i) => i !== index)
+        }));
+    }
+
+    const addQualification = (e) => {
+        e.preventDefault();
+        addItem('qualifications', {
+            startingDate: '', 
+            endingDate: '', 
+            degree: 'PHD', 
+            university: 'Dhaka Medical College'
+        })
+    }
+
+    const handleQualificationChange = (event, index) => {
+        handleReusableInputChangeFunc('qualifications', index, event)
+    };
+
+    const deleteQualification = (e, index) => {
+        e.preventDefault();
+        
+        deleteItem('qualifications', index)
+    };
+```
+
+```jsx
+<div className='mb-5'>
+  <p className='form__label'>Qualification*</p>
+  {
+      formData.qualifications?.map((item, index) => (
+          <div key={index}>
+              <div>
+                  <div className='grid grid-cols-2 gap-5'>
+                      <div>
+                          <p className='form__label'>Starting Date*</p>
+                          <input 
+                              type='date' 
+                              name='startingDate'
+                              value={item.startingDate}
+                              className='form__input'
+                              onChange={(e) => handleQualificationChange(e, index)}
+                          />
+                      </div>
+                      <div>
+                          <p className='form__label'>Ending Date*</p>
+                          <input 
+                              type='date' 
+                              name='endingDate'
+                              value={item.endingDate}
+                              className='form__input'
+                              onChange={(e) => handleQualificationChange(e, index)}
+                          />
+                      </div>
+                  </div>
+                    <div className='grid grid-cols-2 gap-5 mt-5'>
+                        <div>
+                            <p className='form__label'>Degree*</p>
+                            <input 
+                                type='text' 
+                                name='degree'
+                                value={item.degree}
+                                className='form__input'
+                                onChange={(e) => handleQualificationChange(e, index)}
+                            />
+                        </div>
+                        <div>
+                            <p className='form__label'>University*</p>
+                            <input 
+                                type='text' 
+                                name='university'
+                                value={item.university}
+                                className='form__input'
+                                onChange={(e) => handleQualificationChange(e, index)}
+                            />
+                        </div>
+                    </div>
+
+                    <button 
+                        onClick={(e) => deleteQualification(e, index)}
+                        className='bg-red-600 p-2 rounded-full text-white text-[18px] mt-2 mb-[30px] cursor-pointer'
+                    >
+                        <AiOutlineDelete />
+                    </button>
+                </div>
+            </div>
+        ))
+    }
+
+    <button 
+        onClick={addQualification}
+        className='bg-[#000] py-2 px-5 rounded text-white h-fit cursor-pointer'
+    >
+        Add Qualification
+    </button>
+</div>
+```
+
+```jsx
+<div className='mb-5 flex items-center gap-3'>
+  {
+      formData.photo && (
+          <figure className='w-[60px] h-[60px] rounded-full border-2 border-solid border-primaryColor
+              flex items-center justify-center'>
+              <img 
+                  src={formData.photo} 
+                  alt="" 
+                  className='w-full h-full rounded-full'/>
+          </figure>
+      )
+  }
+
+  <div className='relative w-[130px] h-[50px]'>
+      <input 
+          type="file" 
+          name='photo' 
+          id='customFile' 
+          onChange={handleFileInputChange}
+          accept='.jpg, .png'
+          className='absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer'
+      />
+
+      <label htmlFor="customFile" className='absolute top-0 left-0 w-full h-full
+            flex items-center px-[0.75rem] py-[0.375rem] text-[15px] leading-6 overflow-hidden
+            bg-[#0066FF46] text-headingColor font-semibold rounded-lg cursor-pointer'>
+          Upload Photo
+      </label>
+  </div>
+</div>
+```
+
+# useFetchData
+
+```jsx
+import {useContext, useEffect, useState} from 'react';
+import { authContext } from '../context/AuthContext';
+//import { token } from '../config';
+
+const useFetchData = (url) => {
+
+    const { token } = useContext(authContext);
+   
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    
+    // Parse the token to remove extra escape characters and double quotes
+    //const parsedToken = token.replace(/\\"/g, '').replace(/\\/g, '').replace(/"/g, '');
+    //console.log('Token in useContext useFetchData: ', token);
+
+    useEffect(() => {
+        const fetchData = async () => {
+  
+            setLoading(true);
+            try {
+
+                const res = await fetch(url, {
+                    headers: {Authorization : `Bearer ${token}`}
+                })
+    
+                const result = await res.json();
+    
+                if(!res.ok){
+                    throw new Error(result.message + 'haha')
+                }
+
+                // console.log("Data: ", result.data);
+                setData(result.data)
+                setLoading(false);
+
+            } catch (err) {
+                setLoading(false);
+                setError(err.message)
+            }
+        };
+
+        fetchData();
+    }, [url])
+
+    return {
+        data, loading, error
+    }
+}
+
+export default useFetchData;
+```
+
+- Get data
+
+```jsx
+import  useGetProfile  from '../../hooks/useFetchData.jsx';
+
+const {data, loading, error} = useGetProfile(`${BASE_URL}/doctors/profile/me`);
+```

@@ -1,4 +1,4 @@
-import  { useContext, useState } from 'react';
+import  { useContext, useEffect, useState } from 'react';
 import { AiOutlineDelete } from 'react-icons/ai';
 import uploadImageToCloudinary from '../../utils/uploadCloudinary.jsx';
 import { BASE_URL } from '../../config.js';
@@ -31,6 +31,25 @@ const Profile = ({doctorData}) => {
         about: '',
         photo: null
     })
+
+    useEffect(() => {
+        setFormData({
+            name: doctorData?.name,
+            email: doctorData?.email,
+            phone: doctorData?.phone,
+            bio: doctorData?.bio,
+            gender: doctorData?.gender,
+            specialization: doctorData?.specialization,
+            ticketPrice: doctorData?.ticketPrice,
+            qualifications: doctorData?.qualifications,
+            experiences: doctorData?.experiences,
+            timeSlots: doctorData?.timeSlots,
+            about: doctorData?.about,
+            photo: doctorData?.photo
+        })
+    }, [doctorData]);
+
+    console.log('Form Data in Profile: ', doctorData);
 
     const handleInputChange = (e) => {
         setFormData({
@@ -189,7 +208,7 @@ const Profile = ({doctorData}) => {
                 <div className='mb-5'>
                     <p className='form__label'>Email*</p>
                     <input 
-                        type='text' 
+                        type='email' 
                         name='email' 
                         value={formData.email} 
                         onChange={handleInputChange}
@@ -214,8 +233,8 @@ const Profile = ({doctorData}) => {
                 <div className='mb-5'>
                     <p className='form__label'>Bio*</p>
                     <input 
-                        type='bio' 
-                        name='phone' 
+                        type='text' 
+                        name='bio' 
                         value={formData.bio} 
                         onChange={handleInputChange}
                         placeholder='Bio'

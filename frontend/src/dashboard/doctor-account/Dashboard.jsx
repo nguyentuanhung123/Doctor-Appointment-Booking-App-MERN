@@ -7,6 +7,7 @@ import starIcon from '../../assets/images/Star.png'
 import { useState } from "react";
 import DoctorAbout from "../../pages/Doctors/DoctorAbout.jsx";
 import Profile from "./Profile.jsx";
+import Appointments from "./Appointments.jsx";
 
 const Dashboard = () => {
 
@@ -97,7 +98,7 @@ const Dashboard = () => {
                   }
                   {
                     tab === 'appointments' && (
-                      <div>appoinments</div>
+                      <Appointments appointments={data.appointments}/>
                     )
                   }
                   {
