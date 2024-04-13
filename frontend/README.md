@@ -1574,3 +1574,73 @@ import  useGetProfile  from '../../hooks/useFetchData.jsx';
 
 const {data, loading, error} = useGetProfile(`${BASE_URL}/doctors/profile/me`);
 ```
+
+# Search doctor on Doctor Page
+```jsx
+const [query, setQuery] = useState('');
+
+const {data: doctors, loading, error} = useFetchData(`${BASE_URL}/doctors?query=${query}`)
+
+const handleSearch = () => {
+  setQuery(query.trim())
+
+  console.log('handle search');
+}
+```
+
+```jsx
+<div className='max-w-[570px] mt-[30px] mx-auto bg-[#0066FF2C] rounded-md
+    flex items-center justify-between'>
+    <input 
+        type='search' 
+        className='py-4 pl-4 pr-2 bg-transparent w-full focus:outline-none
+        cursor-pointer placeholder:text-textColor' 
+        placeholder='Search doctor by name or specification'
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+    />
+    <button
+        onClick={handleSearch} 
+        className='btn mt-0 rounded-[0px] rounded-r-md'
+    >
+        Search
+    </button>
+</div>
+```
+
+```jsx
+export const getAllDoctor = async(req, res) => {
+
+    try{
+
+        /**
+         * Search doctor on Web
+         */
+        const { query } = req.query;
+        let doctors;
+
+        if(query){
+            doctors = await Doctor.find({
+                isApproved: 'approved', 
+                $or: [
+                    { name: { $regex: query, $options: 'i' } },
+                    { specialization: { $regex: query, $options: 'i' } },
+                ],
+            }).select('-password');
+        } else {
+            doctors = await Doctor.find({ isApproved: 'approved' }).select('-password');
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Doctors found',
+            data: doctors,
+        })
+    } catch(err) {
+        return res.status(404).json({
+            success: false,
+            message: 'Not found'
+        })
+    }
+}
+```
