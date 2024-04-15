@@ -1667,3 +1667,49 @@ useEffect(() => {
     return () => clearTimeout(timeout)
 }, [query])
 ```
+
+# Render ra chữ hoa từ chữ thường thường
+```jsx
+{item.day} /// tueaday
+{item.day.charAt(0).toUpperCase() + item.day.slice(1)} // Tuesday
+```
+
+# Đổi thời gian mặc định
+```jsx
+{item.startingTime} - {item.engdingTime} // 08:00 - 23:30
+```
+
+```jsx
+import React from 'react'
+
+const convertTime = (time) => {
+
+    // timePart will return an array
+    const timeParts = time.split(':');
+    let hours = parseInt(timeParts[0]);
+    const minutes = parseInt(timeParts[1]);
+
+    let meridiem = 'am'
+
+    if(hours >= 12){
+        meridiem = 'pm'
+
+        if(hours > 12){
+            hours -= 12
+        }
+    }
+
+    return (
+        hours.toString().padStart(2) + 
+        minutes.toString().padStart(2, '0') + 
+        ' ' + 
+        meridiem
+    )
+}
+
+export default convertTime;
+```
+
+```jsx
+{convertTime(item.startingTime)} - {convertTime(item.engdingTime)}
+```
