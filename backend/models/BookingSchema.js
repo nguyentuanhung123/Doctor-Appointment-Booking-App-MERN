@@ -16,10 +16,6 @@ const bookingSchema = new mongoose.Schema(
             type: String, 
             required: true 
         },
-        appointmentDate: {
-            type: Date,
-            required: true,
-        },
         status: {
             type: String,
             enum: ["pending", "approved", "cancelled"],
@@ -34,5 +30,14 @@ const bookingSchema = new mongoose.Schema(
         timestamps: true 
     }
 );
+
+bookingSchema.pre(/^find/, function(next){
+    this.populate('user').populate({
+        path: 'doctor',
+        select: 'name'
+    })
+
+    next();
+})
 
 export default mongoose.model("Booking", bookingSchema);

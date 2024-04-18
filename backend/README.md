@@ -316,5 +316,9 @@ export default mongoose.model("Review", reviewSchema);
         .select('-password');
 ```
 
+# Sử dụng Stripe 
+- B1: npm i stripe (cả backend và frontend đều phải tải)
+- B2: Tạo file bookingController.js
+
 
 
